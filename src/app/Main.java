@@ -78,16 +78,18 @@ public class Main {
 
 
 
-    private static void printMenu() {
-        System.out.println("\n=== МЕНЮ ===");
-        System.out.println("1. Показать все автомобили");
-        System.out.println("2. Добавить новый автомобиль");
-        System.out.println("3. Удалить автомобиль");
-        System.out.println("4. Сортировать автомобили");
-        System.out.println("5. Поиск автомобиля");
-        System.out.println("6. Фильтрация через Stream API");
-        System.out.println("7. Информация о коллекции");
-        System.out.println("8. Многопоточный подсчёт автомобилей по году");
+    private void printMainMenu() {
+        System.out.println("\n=== ГЛАВНОЕ МЕНЮ ===");
+        System.out.println("1. Инициализировать коллекцию (заполнить данными)");
+        System.out.println("2. Показать все автомобили");
+        System.out.println("3. Добавить автомобиль (вручную)");
+        System.out.println("4. Удалить автомобиль");
+        System.out.println("5. Сортировать автомобили");
+        System.out.println("6. Поиск автомобиля");
+        System.out.println("7. Фильтрация через Stream API");
+        System.out.println("8. Работа с файлами");
+        System.out.println("9. Информация о коллекции");
+        System.out.println("10. Многопоточный подсчёт автомобилей по году");
         System.out.println("0. Выход");
         System.out.print("Выберите действие: ");
     }
