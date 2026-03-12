@@ -57,7 +57,7 @@ public class CustomCarList implements Iterable<Car> {
      * @throws IllegalArgumentException если car == null
      */
     public void add(int index, Car car) {
-        Objects.requireNonNull(car, "Автомобиль не может быть пуст");
+        if (car == null) { throw new IllegalArgumentException("Автомобиль не может быть пуст");}
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
