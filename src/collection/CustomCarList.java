@@ -11,11 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Comparator;
 import java.util.Objects;
 
-/**
- * Кастомная реализация динамического списка для объектов Car
- * Поддерживает автоматическое расширение, итератор и Stream API
- * Полностью совместима с классом Car, предоставленным в задании
- */
+// Кастомка Поддерживает автоматическое расширение, итератор и Stream API
 public class CustomCarList implements Iterable<Car> {
     private static final int DEFAULT_CAPACITY = 10;
     private static final float GROWTH_FACTOR = 1.5f;
@@ -24,33 +20,21 @@ public class CustomCarList implements Iterable<Car> {
     private int size;
     private int modCount; // Счетчик изменений для итератора
 
-    // ========== Конструкторы ==========
-
-    /**
-     * Создает пустой список с начальной емкостью по умолчанию (10)
-     */
+    //Создает пустой список с начальной емкостью по умолчанию (10)
     public CustomCarList() {
         this(DEFAULT_CAPACITY);
     }
 
-    /**
-     * Создает пустой список с указанной начальной емкостью
-     * @param initialCapacity начальная емкость списка
-     * @throws IllegalArgumentException если initialCapacity < 0
-     */
     public CustomCarList(int initialCapacity) {
         if (initialCapacity < 0) {
-            throw new IllegalArgumentException("Initial capacity cannot be negative: " + initialCapacity);
+            throw new IllegalArgumentException("Начальная емкость не может быть отрицательной: " + initialCapacity);
         }
         this.elements = new Car[initialCapacity];
         this.size = 0;
         this.modCount = 0;
     }
 
-    /**
-     * Создает список, содержащий элементы указанной коллекции
-     * @param cars коллекция для копирования
-     */
+    //Создает список, содержащий элементы указанной коллекции
     public CustomCarList(CustomCarList cars) {
         this.elements = new Car[cars.size()];
         System.arraycopy(cars.elements, 0, this.elements, 0, cars.size());
@@ -58,29 +42,22 @@ public class CustomCarList implements Iterable<Car> {
         this.modCount = 0;
     }
 
-    // ========== Основные методы работы со списком ==========
-
-    /**
-     * Добавляет автомобиль в конец списка
-     * @param car автомобиль для добавления (не может быть null)
-     * @throws IllegalArgumentException если car == null
-     */
+    //Добавляет автомобиль в конец списка
     public void add(Car car) {
-        Objects.requireNonNull(car, "Car cannot be null");
+        Objects.requireNonNull(car, "Автомобиль не может быть пуст");
         ensureCapacity();
         elements[size++] = car;
         modCount++;
     }
 
-    /**
-     * Добавляет автомобиль на указанную позицию
+    /**Добавляет автомобиль на указанную позицию
      * @param index позиция для вставки
      * @param car автомобиль для добавления
      * @throws IndexOutOfBoundsException если index < 0 или index > size
      * @throws IllegalArgumentException если car == null
      */
     public void add(int index, Car car) {
-        Objects.requireNonNull(car, "Car cannot be null");
+        Objects.requireNonNull(car, "Автомобиль не может быть пуст");
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
         }
@@ -92,26 +69,14 @@ public class CustomCarList implements Iterable<Car> {
         modCount++;
     }
 
-    /**
-     * Возвращает автомобиль по индексу
-     * @param index индекс элемента
-     * @return автомобиль на указанной позиции
-     * @throws IndexOutOfBoundsException если индекс вне диапазона
-     */
+    //Возвращает автомобиль по индексу
     public Car get(int index) {
         checkIndex(index);
         return elements[index];
     }
 
-    /**
-     * Заменяет автомобиль на указанной позиции
-     * @param index индекс заменяемого элемента
-     * @param car новый автомобиль
-     * @return предыдущий автомобиль на этой позиции
-     * @throws IndexOutOfBoundsException если индекс вне диапазона
-     * @throws IllegalArgumentException если car == null
-     */
-    public Car set(int index, Car car) {
+    //Заменяет автомобиль на указанной позиции
+     public Car set(int index, Car car) {
         Objects.requireNonNull(car, "Car cannot be null");
         checkIndex(index);
         Car oldCar = elements[index];
@@ -120,12 +85,7 @@ public class CustomCarList implements Iterable<Car> {
         return oldCar;
     }
 
-    /**
-     * Удаляет автомобиль по индексу
-     * @param index индекс удаляемого элемента
-     * @return удаленный автомобиль
-     * @throws IndexOutOfBoundsException если индекс вне диапазона
-     */
+    //Удаляет автомобиль по индексу
     public Car remove(int index) {
         checkIndex(index);
         Car removed = elements[index];
@@ -141,11 +101,7 @@ public class CustomCarList implements Iterable<Car> {
         return removed;
     }
 
-    /**
-     * Удаляет первый найденный указанный автомобиль
-     * @param car автомобиль для удаления
-     * @return true если автомобиль был найден и удален
-     */
+    //Удаляет первый найденный указанный автомобиль
     public boolean remove(Car car) {
         if (car == null) {
             return false;
@@ -159,25 +115,14 @@ public class CustomCarList implements Iterable<Car> {
         return false;
     }
 
-    /**
-     * Возвращает текущий размер списка
-     * @return количество элементов в списке
-     */
     public int size() {
         return size;
     }
 
-    /**
-     * Проверяет, пуст ли список
-     * @return true если список не содержит элементов
-     */
     public boolean isEmpty() {
         return size == 0;
     }
 
-    /**
-     * Очищает список (удаляет все элементы)
-     */
     public void clear() {
         for (int i = 0; i < size; i++) {
             elements[i] = null;
@@ -186,20 +131,12 @@ public class CustomCarList implements Iterable<Car> {
         modCount++;
     }
 
-    /**
-     * Проверяет, содержится ли автомобиль в списке
-     * @param car искомый автомобиль
-     * @return true если автомобиль найден
-     */
+    //Проверяет, содержится ли автомобиль в списке
     public boolean contains(Car car) {
         return indexOf(car) != -1;
     }
 
-    /**
-     * Возвращает индекс первого вхождения автомобиля
-     * @param car искомый автомобиль
-     * @return индекс или -1 если не найден
-     */
+    //Возвращает индекс первого вхождения автомобиля
     public int indexOf(Car car) {
         if (car == null) {
             return -1;
@@ -212,11 +149,7 @@ public class CustomCarList implements Iterable<Car> {
         return -1;
     }
 
-    /**
-     * Возвращает индекс последнего вхождения автомобиля
-     * @param car искомый автомобиль
-     * @return индекс или -1 если не найден
-     */
+    //Возвращает индекс последнего вхождения автомобиля
     public int lastIndexOf(Car car) {
         if (car == null) {
             return -1;
@@ -229,12 +162,8 @@ public class CustomCarList implements Iterable<Car> {
         return -1;
     }
 
-    // ========== Методы для работы с несколькими элементами ==========
-
-    /**
-     * Добавляет все элементы из другой коллекции
-     * @param other коллекция для добавления
-     */
+    //Методы для работы с несколькими элементами
+    //Добавляет все элементы из другой коллекции
     public void addAll(CustomCarList other) {
         if (other == null || other.isEmpty()) {
             return;
@@ -245,10 +174,7 @@ public class CustomCarList implements Iterable<Car> {
         }
     }
 
-    /**
-     * Добавляет все элементы из массива
-     * @param cars массив автомобилей
-     */
+    //Добавляет все элементы из массива
     public void addAll(Car[] cars) {
         if (cars == null || cars.length == 0) {
             return;
@@ -259,29 +185,21 @@ public class CustomCarList implements Iterable<Car> {
         }
     }
 
-    /**
-     * Преобразует список в массив
-     * @return массив, содержащий все элементы списка
-     */
+    //Преобразует список в массив
     public Car[] toArray() {
         Car[] result = new Car[size];
         System.arraycopy(elements, 0, result, 0, size);
         return result;
     }
 
-    // ========== Методы сортировки ==========
+    //Методы сортировки
 
-    /**
-     * Сортирует список с использованием естественного порядка (compareTo)
-     */
+    //Сортирует список с использованием естественного порядка (compareTo)
     public void sort() {
         sort(null);
     }
 
-    /**
-     * Сортирует список с использованием указанного компаратора
-     * @param comparator компаратор для сортировки
-     */
+    //Сортирует список с использованием указанного компаратора
     public void sort(Comparator<? super Car> comparator) {
         if (size > 1) {
             // Простая сортировка пузырьком для демонстрации
@@ -313,25 +231,19 @@ public class CustomCarList implements Iterable<Car> {
         }
     }
 
-    // ========== Stream API поддержка ==========
+    //Stream API
 
-    /**
-     * Создает последовательный Stream из элементов списка
-     * @return Stream элементов списка
-     */
+    //Создает последовательный Stream из элементов списка
     public Stream<Car> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    /**
-     * Создает параллельный Stream из элементов списка
-     * @return параллельный Stream элементов списка
-     */
+    //Создает параллельный Stream из элементов списка
     public Stream<Car> parallelStream() {
         return StreamSupport.stream(spliterator(), true);
     }
 
-    // ========== Итератор ==========
+    //Итератор
 
     @Override
     public Iterator<Car> iterator() {
@@ -379,13 +291,7 @@ public class CustomCarList implements Iterable<Car> {
         return Spliterators.spliterator(elements, 0, size,
                 Spliterator.ORDERED | Spliterator.IMMUTABLE | Spliterator.SIZED);
     }
-
-    // ========== Функциональные методы ==========
-
-    /**
-     * Выполняет указанное действие для каждого элемента списка
-     * @param action действие для выполнения
-     */
+    //Выполняет указанное действие для каждого элемента списка
     public void forEach(Consumer<? super Car> action) {
         Objects.requireNonNull(action);
         for (int i = 0; i < size; i++) {
@@ -393,11 +299,7 @@ public class CustomCarList implements Iterable<Car> {
         }
     }
 
-    /**
-     * Фильтрует список, оставляя только элементы, удовлетворяющие условию
-     * @param predicate условие фильтрации
-     * @return новый список с отфильтрованными элементами
-     */
+    //Фильтрует список, оставляя только элементы, удовлетворяющие условию
     public CustomCarList filter(java.util.function.Predicate<? super Car> predicate) {
         Objects.requireNonNull(predicate);
         CustomCarList result = new CustomCarList();
@@ -409,11 +311,9 @@ public class CustomCarList implements Iterable<Car> {
         return result;
     }
 
-    // ========== Вспомогательные методы ==========
+    //Вспомогательные методы
 
-    /**
-     * Обеспечивает достаточную вместимость массива
-     */
+    //Обеспечивает достаточную вместимость массива
     private void ensureCapacity() {
         if (size == elements.length) {
             resize();
@@ -431,9 +331,7 @@ public class CustomCarList implements Iterable<Car> {
         }
     }
 
-    /**
-     * Увеличивает размер массива в GROWTH_FACTOR раз
-     */
+    //Увеличивает размер массива в GROWTH_FACTOR раз
     private void resize() {
         int newCapacity = (int)(elements.length * GROWTH_FACTOR);
         // Убедимся, что мы хотя бы на 1 увеличили
@@ -449,9 +347,7 @@ public class CustomCarList implements Iterable<Car> {
         elements = newArray;
     }
 
-    /**
-     * Проверяет корректность индекса
-     */
+    //Проверяет корректность индекса
     private void checkIndex(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException(
@@ -460,7 +356,7 @@ public class CustomCarList implements Iterable<Car> {
         }
     }
 
-    // ========== Переопределенные методы Object ==========
+    //Переопределенные методы Object
 
     @Override
     public String toString() {
