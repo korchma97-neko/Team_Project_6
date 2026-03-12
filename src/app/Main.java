@@ -94,6 +94,149 @@ public class Main {
         System.out.print("Выберите действие: ");
     }
 
+    private void initializeCollection() { //меню инциализации коллекции
+        System.out.println("\n=== Инициализация коллекции ===");
+        System.out.println("1. Заполнить случайными данными (через Stream)");
+        System.out.println("2. Заполнить вручную");
+        System.out.println("3. Загрузить из файла");
+        System.out.println("4. Использовать тестовые данные");
+        System.out.println("0. Назад");
+        System.out.print("Выберите способ заполнения: ");
+
+        int choice = readIntInput(0, 4);
+
+        switch (choice) {
+            case 1:
+                fillWithRandomData();
+                break;
+            case 2:
+                fillManually();
+                break;
+            case 3:
+                loadFromFile();
+                break;
+            case 4:
+                initializeTestData();
+                break;
+            case 0:
+                return;
+        }
+    }
+
+
+    private void fillWithRandomData() {
+        System.out.print("Введите количество автомобилей для генерации: ");
+        int count = readIntInput(1, 1000);
+
+        String[] brands = {"Toyota", "Honda", "Ford", "BMW", "Mercedes", "Audi", "Volkswagen", "Nissan", "Hyundai", "Kia"};
+        String[] models = {"Camry", "Accord", "Focus", "X5", "E-Class", "A4", "Golf", "Altima", "Elantra", "Rio"};
+        Random random = new Random();
+
+        // Используем Stream для заполнения
+        carList.clear();
+        IntStream.range(0, count)
+                .mapToObj(i -> {
+                    try {
+                        return new Car.Builder()
+                                .brand(brands[random.nextInt(brands.length)])
+                                .model(models[random.nextInt(models.length)])
+                                .year(2000 + random.nextInt(25))
+                                .build();
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(carList::add);
+
+        System.out.println("Сгенерировано " + carList.size() + " автомобилей");
+    }
+
+    private void fillManually() {
+        System.out.print("Введите количество автомобилей для добавления: ");
+        int count = readIntInput(1, 100);
+
+        for (int i = 0; i < count; i++) {
+            System.out.println("\nАвтомобиль " + (i + 1) + " из " + count);
+            addNewCar();
+        }
+    }
+
+    private void loadFromFile() {
+        List<String> files = FileManager.listAvailableFiles();
+        if (files.isEmpty()) {
+            System.out.println("Нет доступных файлов в директории data/");
+            return;
+        }
+
+        System.out.println("Доступные файлы:");
+        for (int i = 0; i < files.size(); i++) {
+            System.out.println((i + 1) + ". " + files.get(i));
+        }
+        System.out.println("0. Назад");
+        System.out.print("Выберите файл для загрузки: ");
+
+        int choice = readIntInput(0, files.size());
+        if (choice == 0) return;
+
+        CustomCarList loaded = FileManager.loadFromFile(files.get(choice - 1));
+        if (!loaded.isEmpty()) {
+            carList.clear();
+            carList.addAll(loaded);
+            System.out.println("Коллекция загружена. Всего автомобилей: " + carList.size());
+        }
+    }
+
+    private void fileOperations() {
+        System.out.println("\n=== Работа с файлами ===");
+        System.out.println("1. Сохранить текущую коллекцию в файл");
+        System.out.println("2. Сохранить текущую коллекцию в файл (режим добавления)");
+        System.out.println("3. Загрузить коллекцию из файла");
+        System.out.println("4. Показать список доступных файлов");
+        System.out.println("0. Назад");
+        System.out.print("Выберите действие: ");
+
+        int choice = readIntInput(0, 4);
+
+        switch (choice) {
+            case 1:
+                saveToFile(false);
+                break;
+            case 2:
+                saveToFile(true);
+                break;
+            case 3:
+                loadFromFile();
+                break;
+            case 4:
+                List<String> files = FileManager.listAvailableFiles();
+                if (files.isEmpty()) {
+                    System.out.println("Нет доступных файлов");
+                } else {
+                    System.out.println("Доступные файлы:");
+                    files.forEach(f -> System.out.println("  - " + f));
+                }
+                break;
+            case 0:
+                return;
+        }
+    }
+
+    private void saveToFile(boolean append) {
+        if (carList.isEmpty()) {
+            System.out.println("Коллекция пуста, нечего сохранять");
+            return;
+        }
+
+        System.out.print("Введите имя файла (по умолчанию cars.txt): ");
+        String filename = scanner.nextLine().trim();
+        if (filename.isEmpty()) {
+            filename = "cars.txt";
+        }
+
+        FileManager.saveToFile(carList, filename, append);
+    }
+
     private static void showAllCars() {
         System.out.println("\n=== Список автомобилей ===");
         if (carList.isEmpty()) {
