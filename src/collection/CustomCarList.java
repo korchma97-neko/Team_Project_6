@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Comparator;
 import java.util.Objects;
 
-// Кастомка Поддерживает автоматическое расширение, итератор и Stream API
+// Кастомная коллекция поддерживает автоматическое расширение, итератор и Stream API
 public class CustomCarList implements Iterable<Car> {
     private static final int DEFAULT_CAPACITY = 10;
     private static final float GROWTH_FACTOR = 1.5f;
@@ -149,21 +149,8 @@ public class CustomCarList implements Iterable<Car> {
         return -1;
     }
 
-    //Возвращает индекс последнего вхождения автомобиля
-    public int lastIndexOf(Car car) {
-        if (car == null) {
-            return -1;
-        }
-        for (int i = size - 1; i >= 0; i--) {
-            if (car.equals(elements[i])) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     //Методы для работы с несколькими элементами
-    //Добавляет все элементы из другой коллекции
+    //добавляет все элементы из другой коллекции
     public void addAll(CustomCarList other) {
         if (other == null || other.isEmpty()) {
             return;
@@ -238,16 +225,11 @@ public class CustomCarList implements Iterable<Car> {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    //Создает параллельный Stream из элементов списка
-    public Stream<Car> parallelStream() {
-        return StreamSupport.stream(spliterator(), true);
-    }
-
     //Итератор
 
     @Override
     public Iterator<Car> iterator() {
-        return new Iterator<Car>() {
+        return new Iterator<>() {
             private int currentIndex = 0;
             private int expectedModCount = modCount;
             private boolean canRemove = false;
@@ -259,7 +241,7 @@ public class CustomCarList implements Iterable<Car> {
 
             @Override
             public Car next() {
-                checkForComodification();
+                checkForCoModification();
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
@@ -272,13 +254,13 @@ public class CustomCarList implements Iterable<Car> {
                 if (!canRemove) {
                     throw new IllegalStateException("remove() can only be called once after next()");
                 }
-                checkForComodification();
+                checkForCoModification();
                 CustomCarList.this.remove(--currentIndex);
                 expectedModCount = modCount;
                 canRemove = false;
             }
 
-            private void checkForComodification() {
+            private void checkForCoModification() {
                 if (modCount != expectedModCount) {
                     throw new java.util.ConcurrentModificationException();
                 }
