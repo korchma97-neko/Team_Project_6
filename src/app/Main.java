@@ -9,9 +9,12 @@ import strategy.SelectionSortStrategy;
 import strategy.SortStrategy;
 import service.MultiThreadCounter;
 import service.CounterService;
+import io.FileManager;
 
+import java.util.*;
 import java.util.Comparator;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class Main {
     private static Scanner scanner = new Scanner(System.in);
@@ -23,47 +26,45 @@ public class Main {
         new Main().run(); //Запуск главного цикла программы
 }
 
-    private void run() {    //Главный цыкл программы
+    private void run() {    //Главный цЫкл программы
         System.out.println("=== Программа сортировки автомобилей ===");
 
         // Добавим несколько тестовых автомобилей для демонстрации
         initializeTestData();
 
         while (true) {
-            printMenu();
-            int choice = readIntInput();
+            printMainMenu();
+            int choice = readIntInput(0, 10);
 
             switch (choice) {
                 case 1:
-                    // Показать все автомобили
-                    showAllCars();
+                    initializeCollection();
                     break;
                 case 2:
-                    // Добавить автомобиль
-                    addNewCar();
+                    showAllCars();
                     break;
                 case 3:
-                    // Удалить автомобиль
-                    deleteCar();
+                    addNewCar();
                     break;
                 case 4:
-                    // Сортировать автомобили
-                    sortCars();
+                    deleteCar();
                     break;
                 case 5:
-                    // Поиск автомобиля
-                    searchCar();
+                    sortCars();
                     break;
                 case 6:
-                    // Фильтрация через Stream API
-                    filterCars();
+                    searchCar();
                     break;
                 case 7:
-                    // Информация о коллекции
-                    showCollectionInfo();
+                    filterCars();
                     break;
                 case 8:
-                    // Многопоточность
+                    fileOperations();
+                    break;
+                case 9:
+                    showCollectionInfo();
+                    break;
+                case 10:
                     countCarsByYearMultiThreaded();
                     break;
                 case 0:
@@ -71,7 +72,7 @@ public class Main {
                     scanner.close();
                     return;
                 default:
-                    System.out.println("Неверный выбор. Попробуйте снова.");
+                    System.out.println("Неверный выбор.");
             }
         }
     }
@@ -250,7 +251,7 @@ public class Main {
         System.out.printf("Всего автомобилей: %d%n", carList.size());
     }
 
-    private static void addNewCar() {
+    private void addNewCar() {
         System.out.println("\n=== Добавление нового автомобиля ===");
 
         try {
@@ -263,7 +264,7 @@ public class Main {
             builder.model(scanner.nextLine());
 
             System.out.print("Введите год выпуска: ");
-            builder.year(readIntInput());
+            builder.year(readIntInput(1886,2026));
 
             Car newCar = builder.build();
             carList.add(newCar);
@@ -274,7 +275,7 @@ public class Main {
         }
     }
 
-    private static void deleteCar() {
+    private void deleteCar() {
         System.out.println("\n=== Удаление автомобиля ===");
         if (carList.isEmpty()) {
             System.out.println("Список автомобилей пуст!");
@@ -283,7 +284,7 @@ public class Main {
 
         showAllCars();
         System.out.print("Введите номер автомобиля для удаления: ");
-        int index = readIntInput() - 1;
+        int index = readIntInput(1, carList.size()) - 1;
 
         try {
             Car removed = carList.remove(index);
@@ -293,7 +294,7 @@ public class Main {
         }
     }
 
-    private static void sortCars() {
+    private void sortCars() {
         System.out.println("\n=== Сортировка автомобилей ===");
         if (carList.isEmpty()) {
             System.out.println("Список автомобилей пуст!");
@@ -307,7 +308,7 @@ public class Main {
         System.out.println("0. Назад");
         System.out.print("Выберите тип сортировки: ");
 
-        int choice = readIntInput();
+        int choice = readIntInput(0,3);
 
         Comparator<Car> comparator;
         switch (choice) {
@@ -410,7 +411,7 @@ public class Main {
         }
     }
 
-    private static void filterCars() {
+    private void filterCars() {
         if (carList.isEmpty()) {
             System.out.println("Список автомобилей пуст!");
             return;
@@ -423,7 +424,7 @@ public class Main {
         System.out.println("0. Назад");
         System.out.print("Выберите фильтр: ");
 
-        int choice = readIntInput();
+        int choice = readIntInput(0,3);
 
         CustomCarList filtered = new CustomCarList();
 
@@ -488,7 +489,7 @@ public class Main {
         }
     }
 
-    private static void countCarsByYearMultiThreaded() {
+    private void countCarsByYearMultiThreaded() {
         System.out.println("\n=== Многопоточный подсчёт автомобилей по году ===");
 
         if (carList.isEmpty()) {
@@ -497,7 +498,7 @@ public class Main {
         }
 
         System.out.println("Введите год для подсчёта: ");
-        int year = readIntInput();
+        int year = readIntInput(1886, 2026);
         int result = counterService.countCarsByYear(carList, year);
 
         System.out.println("Количество автомобилей с годом " + year + ": " + result);
@@ -542,10 +543,14 @@ public class Main {
     }
 
     // Проверки на пользовательскую ошибку ввода
-    private static int readIntInput() {
+    private int readIntInput(int min, int max) {
         while (true) {
             try {
-                return Integer.parseInt(scanner.nextLine());
+                int value = Integer.parseInt(scanner.nextLine());
+                if (value >= min && value <= max) {
+                    return value;
+                }
+                System.out.print("Ошибка! Введите число от " + min + " до " + max + ": ");
             } catch (NumberFormatException e) {
                 System.out.print("Ошибка! Введите число: ");
             }
